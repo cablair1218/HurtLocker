@@ -17,9 +17,9 @@ public class ParseData {
         jerkSonParse(str);
         for (GroceryItem groceryItem : groceryItems) {
             String name = formatNamePrint(groceryItem);
-            String price = formatPricePrint(groceryItem);
+            String price = formatPriceCount(groceryItem);
             String total = formatTotalItems(groceryItem);
-            output += name + total + "\n=============\t\t=============\n"+ price +"\n";
+            output += name + total + "\n=============\t\t=============\n"+ price + "\n";
         }
         String error = formatError(calculateError());
         output+= error;
@@ -27,12 +27,12 @@ public class ParseData {
 
     }
 
-    private void jerkSonParse(String str){
+    public void jerkSonParse(String str){
         groceryObjects = str.split("##");
         parseInfo(groceryObjects);
     }
 
-    private void parseInfo(String[] arrGroceryObjects){
+    public void parseInfo(String[] arrGroceryObjects){
         for (String s: arrGroceryObjects) {
             String parse = "((?i)\\bname:\\b)(\\w+)([;@^*%!])(\\b(?i)price:\\b)(\\d.\\d{2})([;@^*%!])((?i)\\btype:\\b)(\\w+)([;@^*%!])(\\b(?i)expiration:\\b)(\\d/\\d{2}/\\d{4})";
             Pattern pattern = Pattern.compile(parse);
@@ -54,12 +54,12 @@ public class ParseData {
         }
     }
 
-    private String formatName(String name){
+    public String formatName(String name){
         name = name.replaceAll("\\d+","o");
         return name.substring(0,1).toUpperCase() + name.substring(1).toLowerCase();
     }
 
-    private int calculateError(){
+    public int calculateError(){
         int totalItems = 0;
         for(GroceryItem g: groceryItems){
             for(int i : g.getPriceCount().values()){
@@ -67,16 +67,15 @@ public class ParseData {
             }
 
         }
-        int error = groceryObjects.length - totalItems;
-        return error;
+        return groceryObjects.length - totalItems;
     }
 
-    private String formatError(int error){
+    public String formatError(int error){
         return String.format("Errors\t\t\t\tseen: %d times", error);
 
     }
 
-    private String formatTotalItems(GroceryItem groceryItem){
+    public String formatTotalItems(GroceryItem groceryItem){
         HashMap<String, Integer> priceCount;
         int total = 0;
         priceCount = groceryItem.getPriceCount();
@@ -84,27 +83,27 @@ public class ParseData {
         for (int j = 0; j < priceCount.size(); j++){
             total += priceCount.get(prices[j]);
         }
-
         return String.format("seen: %d times", total);
     }
 
-    private String formatNamePrint(GroceryItem groceryItem){
+    public String formatNamePrint(GroceryItem groceryItem){
         return String.format("name:\t%s\t\t", groceryItem.getName());
     }
 
-    private String formatPricePrint(GroceryItem groceryItem){
+    public String formatPriceCount(GroceryItem groceryItem){
         HashMap<String, Integer> priceCount;
         String price = "";
         priceCount = groceryItem.getPriceCount();
         Object[] prices = priceCount.keySet().toArray();
         for (int j = 0; j < priceCount.size(); j++){
-            price += String.format("Price:\t%s\t\tseen: %d times\n" +
-                    "-------------\t\t-------------\n",prices[j], priceCount.get(prices[j]));
+            price += String.format("Price:\t%s\t\tseen: %d times",prices[j],priceCount.get(prices[j]));
+            price += "\n-------------\t\t-------------\n";
+
         }
         return price;
     }
 
-    private void duplicateItems(String name, String price){
+    public void duplicateItems(String name, String price){
         HashMap<String, Integer> priceCount;
         for (GroceryItem g : groceryItems) {
             if (g.getName().equals(name)) {
@@ -117,5 +116,9 @@ public class ParseData {
                 }
             }
         }
+    }
+
+    public ArrayList<GroceryItem> getGroceryItems() {
+        return groceryItems;
     }
 }
